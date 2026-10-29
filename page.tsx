@@ -1,484 +1,344 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CSSProperties } from "react";
 
-export default function Home() {
-  const [stage, setStage] = useState(0);
-  const [revealed, setRevealed] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+/* ✅ WEDDING date — same wedding, groom's invitation */
+const weddingDate = new Date("2026-11-22T11:00:00"); // Sun 22 Nov 2026, 11 AM
 
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 480);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
+function pad(v: number) {
+  return String(Math.max(0, v)).padStart(2, "0");
+}
 
-  // Opening Bismillah
-  useEffect(() => {
-    const t1 = setTimeout(() => setStage(1), 1000);
-    return () => clearTimeout(t1);
-  }, []);
-
-  // Staggered reveal animations
-  useEffect(() => {
-    if (stage !== 1) return;
-
-    const delays = [
-      0, 180, 360, 540, 720, 900,
-      1080, 1260, 1440, 1620, 1800,
-    ];
-
-    const timers = delays.map((ms, i) =>
-      setTimeout(() => setRevealed(i + 1), ms)
-    );
-
-    return () => timers.forEach(clearTimeout);
-  }, [stage]);
-
-  // FIX: TypeScript requires the parameter type
-  const reveal = (at: number): CSSProperties => ({
-    opacity: revealed >= at ? 1 : 0,
-    transform:
-      revealed >= at ? "translateY(0)" : "translateY(28px)",
-    transition:
-      "opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
-  });
-
-  const nameSize = "clamp(42px, 13vw, 62px)";
-  const dividerLineWidth = isMobile ? "32px" : "60px";
-
-  const ornament = (
-    <span
-      style={{
-        width: "6px",
-        height: "6px",
-        background: "#1e463c",
-        transform: "rotate(45deg)",
-        flexShrink: 0,
-      }}
-    />
-  );
-
-  const goldDot = (
-    <span
-      style={{
-        width: "6px",
-        height: "6px",
-        borderRadius: "50%",
-        background: "#c9a961",
-        flexShrink: 0,
-      }}
-    />
-  );
-
-  const pinkDiamond = (
-    <span
-      style={{
-        width: "6px",
-        height: "6px",
-        background: "#d8a8b0",
-        transform: "rotate(45deg)",
-        flexShrink: 0,
-      }}
-    />
-  );
-
-  const divider = (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "10px",
-      }}
-    >
-      <span
-        style={{
-          width: dividerLineWidth,
-          height: "1px",
-          background:
-            "linear-gradient(90deg, transparent, #c9a961)",
-        }}
-      />
-      {ornament}
-      {goldDot}
-      {pinkDiamond}
-      <span
-        style={{
-          width: dividerLineWidth,
-          height: "1px",
-          background:
-            "linear-gradient(90deg, #c9a961, transparent)",
-        }}
-      />
-    </div>
-  );
-
+function Sparkles() {
   return (
-    <main
-      style={{
-        minHeight: "100dvh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background:
-          "radial-gradient(ellipse at top, #f6faf7 0%, #e6efe9 60%, #d3e0d8 100%)",
-        padding: "16px 12px",
-        fontFamily: "'Jost', system-ui, sans-serif",
-        position: "relative",
-        overflow: "hidden",
-        width: "100%",
-        boxSizing: "border-box",
-      }}
-    >
-      <style>{`
-        @media (max-width: 340px) {
-          .bismillah-big {
-            white-space: normal !important;
-            font-size: 6vw !important;
-            line-height: 1.4 !important;
-          }
-          .bismillah-small {
-            white-space: normal !important;
-            font-size: 4.6vw !important;
-            line-height: 1.4 !important;
-          }
-        }
-      `}</style>
-
-      {/* Background decoration */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-150px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "min(700px, 100vw)",
-          height: "500px",
-          background:
-            "radial-gradient(ellipse, rgba(150,190,170,0.32) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: "-160px",
-          right: "-120px",
-          width: "min(520px, 100vw)",
-          height: "520px",
-          background:
-            "radial-gradient(circle, rgba(201,169,97,0.28) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Invitation card */}
-      <div
-        style={{
-          position: "relative",
-          maxWidth: "460px",
-          width: "100%",
-        }}
-      >
-        <div
+    <div className="sparkles" aria-hidden>
+      {Array.from({ length: 34 }).map((_, i) => (
+        <span
+          key={i}
           style={{
-            position: "absolute",
-            inset: "-10px",
-            border: "1px solid rgba(201,169,97,0.55)",
-            borderRadius: "2px",
-            pointerEvents: "none",
+            left: `${(i * 31) % 100}%`,
+            animationDelay: `${(i % 8) * 0.7}s`,
+            animationDuration: `${8 + (i % 5)}s`,
           }}
         />
+      ))}
+    </div>
+  );
+}
 
-        <div
-          style={{
-            background: "#ffffff",
-            padding: isMobile
-              ? "48px 18px 40px"
-              : "56px 42px 48px",
-            textAlign: "center",
-            borderRadius: "1px",
-            boxShadow:
-              "0 30px 80px rgba(60,90,75,0.18), 0 8px 24px rgba(0,0,0,0.05)",
-            position: "relative",
-            minHeight: stage === 0 ? "420px" : "auto",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition:
-              "min-height 1.1s cubic-bezier(0.22, 1, 0.36, 1)",
-            overflow: "hidden",
-            boxSizing: "border-box",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              inset: "14px",
-              border: "1px solid rgba(30,70,60,0.28)",
-              pointerEvents: "none",
-            }}
-          />
+function Divider() {
+  return (
+    <div className="divider" aria-hidden>
+      <span />
+      <b>❦</b>
+      <span />
+    </div>
+  );
+}
 
-          <div
-            style={{
-              position: "absolute",
-              inset: "20px",
-              border: "1px solid rgba(201,169,97,0.55)",
-              pointerEvents: "none",
-            }}
-          />
+export default function Home() {
+  const [opened, setOpened] = useState(false);
+  const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
+  const [copied, setCopied] = useState(false);
 
-          {/* STAGE 0: Opening screen */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: stage >= 1 ? 0 : 1,
-              transform: stage >= 1 ? "scale(1.05)" : "scale(1)",
-              transition:
-                "opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
-              pointerEvents: "none",
-              padding: "0 12px",
-            }}
-          >
-            <p
-              className="bismillah-big"
-              style={{
-                fontSize: "min(6.5vw, 30px)",
-                color: "#1e463c",
-                margin: 0,
-                direction: "rtl",
-                fontFamily: "'Amiri', serif",
-                lineHeight: "1.8",
-                whiteSpace: "nowrap",
-              }}
-            >
-              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-            </p>
+  useEffect(() => {
+    const tick = () => {
+      const total = Math.max(
+        0,
+        Math.floor((weddingDate.getTime() - Date.now()) / 1000)
+      );
+      setT({
+        d: Math.floor(total / 86400),
+        h: Math.floor((total % 86400) / 3600),
+        m: Math.floor((total % 3600) / 60),
+        s: total % 60,
+      });
+    };
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, []);
 
-            <p
-              style={{
-                fontSize: "10px",
-                letterSpacing: isMobile ? "4px" : "8px",
-                color: "#c9a961",
-                marginTop: "22px",
-                textTransform: "uppercase",
-                fontFamily: "'Jost', sans-serif",
-                fontWeight: 400,
-              }}
-            >
-              In the Name of Allah
-            </p>
+  const scrollTo = (id: string) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
-            <div style={{ marginTop: "28px" }}>{divider}</div>
-          </div>
+  const gcalLink = () => {
+    const start = "20261122T110000";
+    const end = "20261122T150000";
+    const title = encodeURIComponent(
+      "Wedding of mohamed Ashiq & Fathima Najiya Nasrin"
+    );
+    const loc = encodeURIComponent(
+      "Tri Valley Auditorium, Tirur, Pariyapuram"
+    );
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&location=${loc}`;
+  };
 
-          {/* STAGE 1: Invitation */}
-          <div
-            style={{
-              position: "relative",
-              zIndex: 2,
-              width: "100%",
-            }}
-          >
-            <p
-              className="bismillah-small"
-              style={{
-                ...reveal(1),
-                fontSize: "min(5vw, 17px)",
-                color: "#1e463c",
-                margin: "0 0 8px",
-                direction: "rtl",
-                fontFamily: "'Amiri', serif",
-                lineHeight: "1.8",
-                whiteSpace: "nowrap",
-              }}
-            >
-              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-            </p>
+  const shareInvite = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const shareData = {
+      title: "Wedding Invitation — Ashiq & Najiya",
+      text: "You're invited to the wedding of mohamed Ashiq & Fathima Najiya Nasrin — 22 Nov 2026, Tri Valley Auditorium, Tirur.",
+      url,
+    };
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+    } catch {
+      /* user cancelled — ignore */
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      window.prompt("Copy this link:", url);
+    }
+  };
 
-            <p
-              style={{
-                ...reveal(2),
-                fontSize: "9px",
-                letterSpacing: isMobile ? "4px" : "7px",
-                color: "#c9a961",
-                margin: "0 0 26px",
-                textTransform: "uppercase",
-                fontFamily: "'Jost', sans-serif",
-                fontWeight: 400,
-              }}
-            >
-              In the Name of Allah
-            </p>
+  return (
+    <main className="invite">
+      <Sparkles />
 
-            <div style={{ ...reveal(3), marginBottom: "26px" }}>
-              {divider}
+      {/* ============ OPENING SCREEN ============ */}
+      {!opened && (
+        <section className="opening">
+          <p className="arabic opening-arabic">
+            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+          </p>
+          <p className="kicker-script">The Wedding Of</p>
+          <h1 className="script-names opening-names">
+            mohamed Ashiq <span>&amp;</span> Fathima Najiya Nasrin
+          </h1>
+          <p className="opening-date">22 · 11 · 2026</p>
+          <button className="open-btn" onClick={() => setOpened(true)}>
+            Open Invitation <span>→</span>
+          </button>
+        </section>
+      )}
+
+      {opened && (
+        <div className="shell fade-in">
+
+          {/* ============ HERO ============ */}
+          <header className="hero">
+            <span className="brand">Invitely</span>
+
+            <div className="floral floral-tl" />
+            <div className="floral floral-tr" />
+            <div className="floral floral-bl" />
+            <div className="floral floral-br" />
+
+            <div className="arch">
+              <div className="arch-ornament arch-ornament-top">❦</div>
+              <div className="arch-inner">
+                <div className="big-day">22</div>
+                <span className="dot">✦</span>
+                <p className="month">NOVEMBER</p>
+                <span className="dot small">◆</span>
+                <p className="year">2026</p>
+              </div>
+              <div className="arch-ornament arch-ornament-bottom">❦</div>
             </div>
 
-            <p
-              style={{
-                ...reveal(4),
-                fontSize: "10px",
-                letterSpacing: isMobile ? "4px" : "7px",
-                color: "#5a7a6a",
-                margin: "0 0 22px",
-                textTransform: "uppercase",
-                fontFamily: "'Jost', sans-serif",
-                fontWeight: 400,
-              }}
-            >
-              The Wedding Of
-            </p>
-
-            <h1
-              style={{
-                ...reveal(5),
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-                fontSize: nameSize,
-                lineHeight: "1.05",
-                color: "#1e463c",
-                margin: 0,
-                letterSpacing: "0.5px",
-                wordBreak: "break-word",
-              }}
-            >
-              Ayesha
-            </h1>
-
-            <p
-              style={{
-                ...reveal(6),
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-                fontSize: "24px",
-                color: "#c9a961",
-                margin: "10px 0",
-                lineHeight: 1,
-              }}
-            >
-              &amp;
-            </p>
-
-            <h1
-              style={{
-                ...reveal(7),
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-                fontSize: nameSize,
-                lineHeight: "1.05",
-                color: "#1e463c",
-                margin: 0,
-                letterSpacing: "0.5px",
-                wordBreak: "break-word",
-              }}
-            >
-              Ahmed
-            </h1>
-
-            <div
-              style={{
-                ...reveal(8),
-                margin: "30px 0 24px",
-              }}
-            >
-              {divider}
+            <div className="pills">
+              <div className="pill">
+                <span className="pill-orn">✦</span>
+                SUNDAY
+                <span className="pill-orn">✦</span>
+              </div>
+              <div className="pill">
+                <span className="pill-orn">✦</span>
+                11.00 AM
+                <span className="pill-orn">✦</span>
+              </div>
             </div>
 
-            <div style={reveal(9)}>
-              <p
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  fontWeight: 500,
-                  fontSize: "14px",
-                  letterSpacing: isMobile ? "3px" : "6px",
-                  color: "#1e463c",
-                  margin: "0 0 8px",
-                }}
-              >
-                14 · 09 · 2026
-              </p>
-
-              <p
-                style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontStyle: "italic",
-                  fontSize: "13px",
-                  letterSpacing: "2px",
-                  color: "#7a8f82",
-                  margin: "0 0 24px",
-                }}
-              >
-                Saturday · 4:00 PM
-              </p>
-            </div>
-
-            <div
-              style={{
-                ...reveal(10),
-                paddingTop: "22px",
-                borderTop: "1px solid rgba(30,70,60,0.22)",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  fontWeight: 500,
-                  fontSize: "12px",
-                  letterSpacing: isMobile ? "3px" : "5px",
-                  color: "#1e463c",
-                  margin: "0 0 8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Jamia Masjid
-              </p>
-
-              <p
-                style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontStyle: "italic",
-                  fontSize: "12px",
-                  color: "#7a8f82",
-                  letterSpacing: "1.5px",
-                  margin: 0,
-                }}
-              >
-                123 Main Street · Boston, MA
-              </p>
-            </div>
-
-            <p
-              style={{
-                ...reveal(11),
-                fontFamily: "'Jost', sans-serif",
-                fontWeight: 400,
-                fontSize: "9px",
-                letterSpacing: isMobile ? "4px" : "7px",
-                color: "#c9a961",
-                marginTop: "28px",
-                textTransform: "uppercase",
-              }}
-            >
-              Barakallahu Lakuma
+            <p className="hero-venue">
+              Tri Valley Auditorium · Tirur · Pariyapuram
             </p>
-          </div>
+
+            <button className="scroll-btn" onClick={() => scrollTo("details")}>
+              Scroll Down <span className="arrow-down">↓</span>
+            </button>
+          </header>
+
+          {/* ============ COUPLE NAMES ============ */}
+          <section className="names-sec">
+            <p className="kicker">Together With Their Families</p>
+            <h1 className="couple-name">mohamed Ashiq</h1>
+            <div className="amp-row">
+              <span className="amp-line" />
+              <span className="amp">&amp;</span>
+              <span className="amp-line" />
+            </div>
+            <h1 className="couple-name">Fathima Najiya Nasrin</h1>
+            <p className="family-note">
+              Request the honour of your presence at their wedding celebration
+            </p>
+          </section>
+
+          <Divider />
+
+          {/* ============ INVITATION BY GROOM'S FAMILY ============ */}
+          <section className="invite-sec">
+            <p className="kicker">With The Blessings Of</p>
+
+            <p className="invite-parents">Mr. Haneefa &amp; Mrs. Rasiya</p>
+            <p className="invite-sub">along with their children</p>
+            {/* <p className="invite-parents">Afsal · Ashiq · Ayisha</p> */}
+
+            <p className="invite-note">
+              joyfully invite you to share in the wedding celebration of their
+              beloved son
+            </p>
+
+            <h2 className="invite-name">mohamed Ashiq</h2>
+
+            <div className="invite-with">
+              <span className="invite-with-line" />
+              <span className="invite-with-word">with</span>
+              <span className="invite-with-line" />
+            </div>
+
+            <h2 className="invite-name">Fathima Najiya Nasrin</h2>
+          </section>
+
+          <Divider />
+
+          {/* ============ QURAN VERSE ============ */}
+          <section className="quote-sec">
+            <div className="quote-mark">“</div>
+            <p className="arabic quote-arabic">
+              وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا
+            </p>
+            <p className="quote">
+              “And among His signs is that He created for you spouses from
+              among yourselves, that you may find tranquillity in them.”
+            </p>
+            <span className="src">— Qur'an 30:21</span>
+          </section>
+
+          {/* ============ COUNTDOWN ============ */}
+          <section id="details" className="details">
+            <p className="kicker">Save The Date</p>
+            <h2 className="h2">Counting Down To Our Wedding</h2>
+            <p className="count-sub">Sunday · 22 November 2026 · 11:00 AM</p>
+            <div className="countdown">
+              <div><strong>{pad(t.d)}</strong><span>Days</span></div>
+              <div><strong>{pad(t.h)}</strong><span>Hours</span></div>
+              <div><strong>{pad(t.m)}</strong><span>Minutes</span></div>
+              <div><strong>{pad(t.s)}</strong><span>Seconds</span></div>
+            </div>
+
+            <a
+              className="cal-btn"
+              href={gcalLink()}
+              target="_blank"
+              rel="noreferrer"
+            >
+              ✦ Add to Calendar
+            </a>
+          </section>
+
+          <Divider />
+
+          {/* ============ EVENT ============ */}
+          <section className="events">
+            <p className="kicker">The Celebration</p>
+            <h2 className="h2">Join Us</h2>
+
+            <div className="event-grid event-grid-single">
+              <article className="event event-featured">
+                <div className="icon">♡</div>
+                <p className="small">THE WEDDING</p>
+                <h3>Wedding Reception</h3>
+                <strong>22 NOVEMBER 2026</strong>
+                <span>Sunday · 11:00 AM</span>
+                <div className="venue-block">
+                  <span className="venue">Tri Valley Auditorium</span>
+                  <span className="venue-sub">Tirur · Pariyapuram</span>
+                </div>
+                <a
+                  href="https://maps.google.com/?q=Tri+Valley+Auditorium+Tirur+Pariyapuram"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View Location →
+                </a>
+              </article>
+            </div>
+          </section>
+
+          <Divider />
+
+          {/* ============ OUR STORY (groom's voice) ============ */}
+          <section className="story-sec">
+            <p className="kicker">With Love</p>
+            <h2 className="h2">Our Story</h2>
+            <p className="story-text">
+              By the grace of Allah, two souls are being joined in a bond of
+              faith and love. What began as a blessed meeting has blossomed
+              into a lifelong promise — and we invite you to celebrate this
+              beautiful beginning with us, Insha'Allah.
+            </p>
+            <div className="story-sign">Ashiq &amp; Najiya</div>
+          </section>
+
+          <Divider />
+
+          {/* ============ DUA ============ */}
+          <section className="dua-sec">
+            <p className="kicker">Duas &amp; Blessings</p>
+            <p className="arabic dua-arabic">
+              بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
+            </p>
+            <p className="dua-text">
+              “May Allah bless you both, shower His blessings upon you, and
+              unite you in goodness.”
+            </p>
+          </section>
+
+          <Divider />
+
+          {/* ============ SHARE ============ */}
+          <section className="share-sec">
+            <p className="kicker">Spread The Joy</p>
+            <h2 className="h2">Share Our Invitation</h2>
+            <p className="share-text">
+              Help us spread the happiness — share this invitation with family
+              and friends.
+            </p>
+            <button className="share-btn" onClick={shareInvite}>
+              {copied ? "✓ Link Copied!" : "✦ Share Invitation"}
+            </button>
+          </section>
+
+          {/* ============ THANK YOU ============ */}
+          <section className="thanks-sec">
+            <p className="arabic thanks-arabic">جَزَاكُمُ اللَّهُ خَيْرًا</p>
+            <p className="thanks-text">
+              Thank you for being part of our special day.
+            </p>
+          </section>
+
+          {/* ============ FOOTER ============ */}
+          <footer className="foot">
+            <p className="arabic">
+              بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا
+            </p>
+            <h2 className="script-names small">Ashiq &amp; Najiya</h2>
+            <p className="foot-note">
+              May your life together be filled with love, mercy &amp; barakah.
+            </p>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+              ↑ Back to top
+            </button>
+          </footer>
         </div>
-      </div>
+      )}
     </main>
   );
 }
